@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+  <head>
+    <title>Tic-Tac-Toe</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
+  </head>
+
+  <body>
+        <div id="container">
+          <div class="info">
+            <h1 class="logo">Tic Tac Toe</h1>
+            <p>Play a game of Tic-Tac-Toe against an AI!</p>
+            <p>Scores will not be kept but you can keep reseting the game to try again as many times as you would like!</p>
+          </div>
+          <div class="gameboard">
+            <table>
+              <tr>
+                <td class="box" data-value="0"></td>
+                <td class="vert box" data-value="1"></td>
+                <td class="box" data-value="2"></td>
+              </tr>
+              <tr>
+                <td class="hori box" data-value="3"></td>
+                <td class="vert hori box" data-value="4"></td>
+                <td class="hori box" data-value="5"></td>
+              </tr>
+              <tr>
+                <td class="box" data-value="6"></td>
+                <td class="vert box" data-value="7"></td>
+                <td class="box" data-value="8"></td>
+              </tr>
+            </table>
+
+            <div class="controller">
+              <button type="button">Reset</button>
+            </div>
+          </div>
+        </div>
+
+    <script src="aoo.js"></script>
+  </body>
+</html>
