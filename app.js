@@ -7,15 +7,17 @@ const Gameboard = (() => {
                        "","","",
                        "","",""];
 
-    // Board functions
-    const boardRender = function() {
-        for (let i = 0; i < gameBoard.length; i++) {
-        boardTiles[i].textContent = gameBoard[i]
-        }
-    }
     const updateBoard = (cell, symbol) => gameBoard[cell] = symbol;
 
-    return {gameBoard, boardRender, updateBoard, boardTiles}
+    const resetGame = () => {
+        boardTiles.forEach((tile) => {
+            Game.removeEvents();
+            tile.innerText = "";
+            Game.winningCombo = [];
+        })
+    }
+
+    return {gameBoard, boardRender, updateBoard, boardTiles, resetGame}
 })();
 
 // Player Module
@@ -66,11 +68,11 @@ const Game = (() => {
             return true;
         }
     }
-
-    const updateWinner = (player, symbol) => {
-    }
-
+    
     let winner;
+    const updateWinner = (player, symbol) => {
+        winner = winningPlayer;
+    }
     const winningPlayer = function() {
         let winLocation = checkForWinner();
         let winMarker = Gameboard.gameBoard[winLocation[0]];
@@ -79,6 +81,7 @@ const Game = (() => {
         } else if (winMarker === "O") {
             return player2;
         }
+        removeEvents();
     }
     
     let turn = 1;
@@ -105,9 +108,9 @@ const Game = (() => {
         }
     }
 
-    function removeEvents() {
+    const removeEvents = () => {
         Gameboard.boardTiles.forEach((tile) => {
-            tile.removeEventListener('click');
+            tile.removeEventListener('click', move);
         });
     }
     function addEvents() {
@@ -117,5 +120,12 @@ const Game = (() => {
     }
     addEvents();
 
-    return {checkForWinner}
+    return {removeEvents, winningCombo}
+})();
+
+const Display = (() => {
+    //Cahing DOM Elements
+
+    //Updating DOM Elements
+
 })();
