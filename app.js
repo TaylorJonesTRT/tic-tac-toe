@@ -7,17 +7,15 @@ const Gameboard = (() => {
                        "","","",
                        "","",""];
 
+    // Board functions
+    const boardRender = function() {
+        for (let i = 0; i < gameBoard.length; i++) {
+        boardTiles[i].textContent = gameBoard[i]
+        }
+    }
     const updateBoard = (cell, symbol) => gameBoard[cell] = symbol;
 
-    const resetGame = () => {
-        boardTiles.forEach((tile) => {
-            Game.removeEvents();
-            tile.innerText = "";
-            Game.winningCombo = [];
-        })
-    }
-
-    return {gameBoard, boardRender, updateBoard, boardTiles, resetGame}
+    return {gameBoard, boardRender, updateBoard, boardTiles}
 })();
 
 // Player Module
@@ -27,36 +25,47 @@ const Player = (name, symbol) => {
 
 // Game functionality
 const Game = (() => {
-    const player1 = Player("Player 1", "X");
-    const player2 = Player("Player 2", "O");
+    // DOM Elements
+    const player1 = Player("Player", "X");
+    const player2 = Player("Computer", "O");
 
     let winningCombo = [];
+    let gameOver = false;
     const checkForWinner = () => {
         if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
             winningCombo = [1, 2, 3];
+            gameOver = true;
             return [1, 2, 3];
         } else if (Gameboard.gameBoard[3] === Gameboard.gameBoard[4] && Gameboard.gameBoard[3] === Gameboard.gameBoard[5] && Gameboard.gameBoard[3] !== ""){
             winningCombo = [3, 4, 5];
+            gameOver = true;
             return [3, 4, 5];
         } else if (Gameboard.gameBoard[6] === Gameboard.gameBoard[7] && Gameboard.gameBoard[6] === Gameboard.gameBoard[8] && Gameboard.gameBoard[6] !== "") {
             winningCombo = [6, 7, 8];
+            gameOver = true;
             return [6, 7, 8];
         } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[4] && Gameboard.gameBoard[0] === Gameboard.gameBoard[8] && Gameboard.gameBoard[0] !== ""){
             winningCombo = [0, 4, 8];
+            gameOver = true;
             return [0, 4, 8];
         } else if (Gameboard.gameBoard[2] === Gameboard.gameBoard[4] && Gameboard.gameBoard[2] === Gameboard.gameBoard[6] && Gameboard.gameBoard[2] !== ""){
             winningCombo = [2, 4, 6];
+            gameOver = true;
             return [2, 4, 6];
         } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[3] && Gameboard.gameBoard[0] === Gameboard.gameBoard[6] && Gameboard.gameBoard[0] !== "") {
             winningCombo = [0, 3, 6];
+            gameOver = true;
             return [0, 3, 6];
         } else if (Gameboard.gameBoard[1] === Gameboard.gameBoard[4] && Gameboard.gameBoard[1] === Gameboard.gameBoard[7] && Gameboard.gameBoard[1] !== "") {
             winningCombo = [1, 4, 7];
+            gameOver = true;
             return [1, 4, 7];
         } else if (Gameboard.gameBoard[2] === Gameboard.gameBoard[5] && Gameboard.gameBoard[2] === Gameboard.gameBoard[8] && Gameboard.gameBoard[2] !== "") {
             winningCombo = [2, 5, 8];
+            gameOver = true;
             return [2, 5, 8];
         } else {
+            gameOver = false;
             return [];
         }        
 }
@@ -68,11 +77,7 @@ const Game = (() => {
             return true;
         }
     }
-    
-    let winner;
-    const updateWinner = (player, symbol) => {
-        winner = winningPlayer;
-    }
+
     const winningPlayer = function() {
         let winLocation = checkForWinner();
         let winMarker = Gameboard.gameBoard[winLocation[0]];
@@ -90,6 +95,7 @@ const Game = (() => {
     }
     // Player move
     const move = (e) => {
+        if (!gameOver){}
         let activePlayer = whosTurn();
         if (e.target.innerText === "") {
             Gameboard.updateBoard(e.target.getAttribute("data-value"), activePlayer.symbol)
@@ -98,8 +104,8 @@ const Game = (() => {
             Gameboard.boardRender();
             checkForWinner();
             if (winningCombo.length !== 0) {
-                winningPlayer;
                 console.log(winningPlayer().name);
+                Display.updateWinnerDiv(winningPlayer());
             } else {
                 turn++;
             }
@@ -118,14 +124,47 @@ const Game = (() => {
             tile.addEventListener('click', move);
         })
     }
+
+    const updateWinner = () => {
+        if (checkForWinner === player1) {
+            winner = player1;
+        } else if (checkForWinner === player2) {
+            winner = player2;
+        }
+    }
+
+    const resetGame = () => {
+        removeEvents();
+        for (let y = 0; y <= 8; y++) {
+            Gameboard.gameBoard[y] = "";
+        }
+        winningCombo = [];
+        winner = "";
+        Gameboard.boardRender();
+        addEvents();
+        Display.updateWinnerDiv("reset");
+    }
+
     addEvents();
 
-    return {removeEvents, winningCombo}
+    return {removeEvents, winningPlayer, updateWinner, resetGame}
 })();
 
 const Display = (() => {
-    //Cahing DOM Elements
+    // DOM Elements
+    winnerResultDiv = document.querySelector(".winner-result");
+    resetBtn = document.querySelector(".reset-btn");
 
-    //Updating DOM Elements
+    // Events
+    resetBtn.addEventListener('click', Game.resetGame);
 
+    // Updating DOM Elements
+    const updateWinnerDiv = (player) => {
+        winnerResultDiv.innerText = player.name
+        if (player === "reset") {
+            winnerResultDiv.innerText = "";
+        }
+    }
+
+    return {updateWinnerDiv}
 })();
