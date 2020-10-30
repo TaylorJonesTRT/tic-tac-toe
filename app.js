@@ -182,7 +182,7 @@ const Game = (() => {
     addEvents();
 
     function bestMove() {
-        let bestScore = -1000;
+        let bestScore = -Infinity;
         let activeplayer = whosTurn();
         let move;
         for (let i = 0; i < 9; i++) {
@@ -215,7 +215,7 @@ const Game = (() => {
             return scores[result];
         }
         if (isMaximizing) {
-            let bestScore = -1000;
+            let bestScore = -Infinity;
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
                     Gameboard.updateBoard(i, player2.symbol);
@@ -226,7 +226,7 @@ const Game = (() => {
             }
             return bestScore;
         } else {
-            let bestScore = 1000;
+            let bestScore = Infinity;
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
                     Gameboard.updateBoard(i, player1.symbol);
