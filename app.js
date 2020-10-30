@@ -219,7 +219,7 @@ const Game = (() => {
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
                     Gameboard.updateBoard(i, player2.symbol);
-                    let score = minimax(Gameboard.gameBoard, depth + 1, false);
+                    let score = minimax(Gameboard.gameBoard, depth + 1, true);
                     bestScore = Math.max(score, bestScore);
                     Gameboard.updateBoard(i, "");
                 }
