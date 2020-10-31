@@ -33,9 +33,9 @@ const Game = (() => {
     let gameOver = false;
     const checkForWinner = () => {
         if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
-            winningCombo = [1, 2, 3];
+            winningCombo = [0, 1, 2];
             gameOver = true;
-            return [1, 2, 3];
+            return [0,1,2];
         } else if (Gameboard.gameBoard[3] === Gameboard.gameBoard[4] && Gameboard.gameBoard[3] === Gameboard.gameBoard[5] && Gameboard.gameBoard[3] !== ""){
             winningCombo = [3, 4, 5];
             gameOver = true;
@@ -66,7 +66,7 @@ const Game = (() => {
             return [2, 5, 8];
         } else {
             gameOver = false;
-            return [];
+            return false;
         }        
 }
 
@@ -84,10 +84,8 @@ const Game = (() => {
         let winMarker = Gameboard.gameBoard[winLocation[0]];
         if (winMarker === "X") {
             winner = "X";
-            return {score: -10}
         } else if (winMarker === "O") {
             winner = "O"
-            return {score: +10}
         }
         let openSpots = 0;
         for (let i = 0; i < Gameboard.gameBoard.length; i++) {
@@ -97,39 +95,16 @@ const Game = (() => {
         }
         if (winner === null && openSpots === 0) {
             winner = "tie";
-            return {score: 0}
+            return winner;
         } else {
            return winner;
         }
-
-        return winner;
     }
     
     let turn = 1;
     const whosTurn = () => {
         return (turn % 2 === 0) ? player2 : player1;
     }
-    // Player move
-    // const move = (e) => {
-    //     if (!gameOver){}
-    //     let activePlayer = whosTurn();
-    //     if (activePlayer === player1) {
-    //         if (e.target.innerText === "") {
-    //             Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
-    //             console.log(e.target.value);
-    //             console.log(player1.symbol);
-    //             Gameboard.boardRender();
-    //             checkForWinner();
-    //             if (winningCombo.length !== 0) {
-    //                 console.log(winningPlayer().name);
-    //                 Display.updateWinnerDiv(winningPlayer());
-    //             }
-    //             turn++;
-    //         }
-    //     } else if (activePlayer === player2) {
-    //         bestMove();
-    //     }
-    // }
 
     const moves = (e) => {
         let activePlayer = whosTurn();
@@ -141,8 +116,7 @@ const Game = (() => {
                 turn++;
             }
         } else if (activePlayer === player2) {
-            bestMove()
-            Gameboard.boardRender();
+            bestMove();
             turn++;
         }
     }
@@ -177,23 +151,32 @@ const Game = (() => {
         Gameboard.boardRender();
         addEvents();
         Display.updateWinnerDiv("reset");
+        turn = 1;
     }
 
     addEvents();
-
+    let playableCells = [];
+    function emptyCells() {
+        for (let i = 0; i < Gameboard.gameBoard.length; i++) {
+            if (Gameboard.gameBoard[i] === "") {
+                playableCells.push(i);
+            }
+        }
+        return playableCells;
+    }
     function bestMove() {
         let bestScore = -Infinity;
-        let activeplayer = whosTurn();
         let move;
         for (let i = 0; i < 9; i++) {
-            if (Gameboard.boardTiles[i].innerText === "") {
-                Gameboard.updateBoard(i, player1.symbol);
-                let score = minimax(Gameboard.boardTiles, 0, false);
-                Gameboard.updateBoard(i, "");
+            if (Gameboard.gameBoard[i] === "") {
+                Gameboard.gameBoard[i] = player2.symbol;
+                let score = minimax(Gameboard.gameBoard, 0, false);
+                Gameboard.gameBoard[i] = "";
+                console.log(score);
                 if (score > bestScore) {
                     bestScore = score;
+                    console.log(i);
                     move = i
-                    // console.log(move);
                 }
             }
         }
@@ -201,27 +184,30 @@ const Game = (() => {
         Gameboard.boardRender();
         return move;
     }
-    let scores = {
-        O: 100,
-        x: -100,
+
+    const scores = {
+        X: -1,
+        O: 1,
         tie: 0
     }
-
-    console.log(winningPlayer());
 
     function minimax(board, depth, isMaximizing) {
         let result = winningPlayer();
         if (result !== null) {
-            return scores[result];
-        }
+            let score = scores[result];
+            return score
+        }        
+        
         if (isMaximizing) {
             let bestScore = -Infinity;
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
-                    Gameboard.updateBoard(i, player2.symbol);
+                    Gameboard.gameBoard[i] =  player2.symbol;
                     let score = minimax(Gameboard.gameBoard, depth + 1, false);
-                    bestScore = Math.max(score, bestScore);
-                    Gameboard.updateBoard(i, "");
+                    Gameboard.gameBoard[i] = "";
+                    if (score > bestScore) {
+                        bestScore = score;
+                    }
                 }
             }
             return bestScore;
@@ -229,10 +215,12 @@ const Game = (() => {
             let bestScore = Infinity;
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
-                    Gameboard.updateBoard(i, player1.symbol);
+                    Gameboard.gameBoard[i] = player1.symbol;
                     let score = minimax(Gameboard.gameBoard, depth + 1, true);
-                    bestScore = Math.min(score, bestScore);
-                    Gameboard.updateBoard(i, "");
+                    Gameboard.gameBoard[i] = "";
+                    if (score < bestScore) {
+                        bestScore = score;
+                    }
                 }
             }
             return bestScore;
@@ -240,7 +228,7 @@ const Game = (() => {
     }
     console.log(minimax(Gameboard.gameBoard, 0, false));
 
-    return {removeEvents, winningPlayer, updateWinner, resetGame}
+    return {removeEvents, winningPlayer, updateWinner, resetGame, minimax}
 })();
 
 const Display = (() => {
@@ -262,3 +250,107 @@ const Display = (() => {
     return {updateWinnerDiv}
 })();
 
+
+
+
+
+const bestMove = () => {
+    let bestScore = -Infinity;
+    let move;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++ ) {
+            if (!gameBoard.boardArray[i][j]) {
+                gameBoard.boardArray[i][j] = player2.getTeam();
+                let score = minimax(gameBoard.boardArray, 0, false);
+                gameBoard.boardArray[i][j] = ''
+                if (score > bestScore) {
+                    bestScore = score;
+                    move = {i , j};
+                }
+            }
+        }
+    }
+    gameBoard.boardArray[move.i][move.j] = player2.getTeam();
+    gameBoard.clearBoard();
+    gameBoard.displayBoard();
+    /* if (currentPlayer == player1) {
+        currentPlayer = player2;
+    } else {
+        currentPlayer = player1;
+    } */
+    turnCount += 1;
+    if (checkForWin()[0] != null) {
+        gameOver = true;
+        const result = document.querySelector("#result");
+        if (checkForWin()[0] != 'tie'){
+            result.textContent = checkForWin()[0] + " WINS!!";
+            
+            body.classList.add("animate");
+            drawLine(checkForWin()[1]);
+            touch.currentTime = 1.3;
+            touch.play();
+        } else {
+            result.textContent = "Cat's game. Try again."
+            cat.currentTime = 0;
+            cat.play();
+        }
+       
+        
+        
+    }
+    if (!gameOver){
+    takeTurn();
+    }
+    
+}
+
+const scores = {
+    X: -1,
+    O: 1,
+    tie: 0
+};
+
+const minimax = (board, depth, isMaximizing) => {
+    let result = checkForWin()[0];
+    if (result !== null) {
+        let score = scores[result];
+        return score
+    }
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++ ) {
+                if (!gameBoard.boardArray[i][j]) {
+                    gameBoard.boardArray[i][j] = player2.getTeam();
+                    let score = minimax(board, depth + 1, false);
+                    gameBoard.boardArray[i][j] = '';
+                    if (score > bestScore) {
+                        bestScore = score;
+                    }
+                }
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++ ) {
+                if (!gameBoard.boardArray[i][j]) {
+                    /* if (currentPlayer == player1) {
+                        currentPlayer = player2;
+                    } else {
+                        currentPlayer = player1;
+                    } */
+                    gameBoard.boardArray[i][j] = player1.getTeam();
+                    let score = minimax(board, depth + 1, true);
+                    gameBoard.boardArray[i][j] = '';
+                    if ( score < bestScore) {
+                        bestScore = score;
+                    }
+                }
+            }
+        }
+        return bestScore;
+    }
+}
