@@ -25,61 +25,29 @@ const Player = (name, symbol) => {
 
 // Game functionality
 const Game = (() => {
-    // DOM Elements
     const player1 = Player("Player", "X");
     const player2 = Player("Computer", "O");
 
-    let winningCombo = [];
-    let gameOver = false;
     const checkForWinner = () => {
         if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
-            winningCombo = [0, 1, 2];
-            gameOver = true;
             return [0,1,2];
         } else if (Gameboard.gameBoard[3] === Gameboard.gameBoard[4] && Gameboard.gameBoard[3] === Gameboard.gameBoard[5] && Gameboard.gameBoard[3] !== ""){
-            winningCombo = [3, 4, 5];
-            gameOver = true;
             return [3, 4, 5];
         } else if (Gameboard.gameBoard[6] === Gameboard.gameBoard[7] && Gameboard.gameBoard[6] === Gameboard.gameBoard[8] && Gameboard.gameBoard[6] !== "") {
-            winningCombo = [6, 7, 8];
-            gameOver = true;
             return [6, 7, 8];
         } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[4] && Gameboard.gameBoard[0] === Gameboard.gameBoard[8] && Gameboard.gameBoard[0] !== ""){
-            winningCombo = [0, 4, 8];
-            gameOver = true;
             return [0, 4, 8];
         } else if (Gameboard.gameBoard[2] === Gameboard.gameBoard[4] && Gameboard.gameBoard[2] === Gameboard.gameBoard[6] && Gameboard.gameBoard[2] !== ""){
-            winningCombo = [2, 4, 6];
-            gameOver = true;
             return [2, 4, 6];
         } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[3] && Gameboard.gameBoard[0] === Gameboard.gameBoard[6] && Gameboard.gameBoard[0] !== "") {
-            winningCombo = [0, 3, 6];
-            gameOver = true;
             return [0, 3, 6];
         } else if (Gameboard.gameBoard[1] === Gameboard.gameBoard[4] && Gameboard.gameBoard[1] === Gameboard.gameBoard[7] && Gameboard.gameBoard[1] !== "") {
-            winningCombo = [1, 4, 7];
-            gameOver = true;
             return [1, 4, 7];
         } else if (Gameboard.gameBoard[2] === Gameboard.gameBoard[5] && Gameboard.gameBoard[2] === Gameboard.gameBoard[8] && Gameboard.gameBoard[2] !== "") {
-            winningCombo = [2, 5, 8];
-            gameOver = true;
             return [2, 5, 8];
         } else {
-            gameOver = false;
             return false;
         }        
-}
-    const checkTie = function() {
-        let openSpots = 0;
-        for (let i = 0; i < 9; i++) {
-            if (Gameboard.gameBoard[i] === "")
-            openSpots.push[i];
-        }
-        if (openSpots.length === 0) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     const winningPlayer = function() {
@@ -106,16 +74,11 @@ const Game = (() => {
     }
 
     const gameOverLogic = function() {
-        if (checkTie() = true) {
-           Display.updateWinnerDiv("tie");
-        } else {
-            if (winningPlayer() === "X") {
-                Display.updateWinnerDiv(player1);
-            } else if (winningPlayer() === "O") {
-                Display.updateWinnerDiv(player2);
-            }
+        if (winningPlayer() === "X") {
+            Display.updateWinnerDiv(player1);
+        } else if (winningPlayer() === "O") {
+            Display.updateWinnerDiv(player2);
         }
-        
     }
     
     let turn = 1;
@@ -131,20 +94,12 @@ const Game = (() => {
                 console.log(player1.symbol);
                 Gameboard.boardRender();
                 console.log(checkForWinner());
-                if (!checkForWinner()) {
-                    turn++;
-                } else {
-                    gameOverLogic();
-                }
+                turn++;
             }
         } else if (activePlayer === player2) {
                 Ai.bestMove();
                 console.log(checkForWinner());
-                if (!checkForWinner()) {
-                    turn++;
-                } else {
-                    gameOverLogic();
-                }
+                turn++;
         }
     }
     
@@ -165,7 +120,6 @@ const Game = (() => {
         for (let y = 0; y <= 8; y++) {
             Gameboard.gameBoard[y] = "";
         }
-        winningCombo = [];
         winner = "";
         Gameboard.boardRender();
         addEvents();
@@ -269,4 +223,6 @@ const Ai = (() => {
 })();
 
 
+// TODO: Need to refactor the code block that determines who the win is assigned to
 // TODO: Need to fix the announcement of the winner in the Display module (currently not showing the announcement if a tie has happened, only if one of the player or the computer wins)
+// TODO: Need to clean up the private/public functions and what is returned and naming scheme of functions
