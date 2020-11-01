@@ -69,12 +69,16 @@ const Game = (() => {
             return false;
         }        
 }
-
     const checkTie = function() {
-        if (board.includes("")) {
-            return false;
-        } else if (!findWinner()){
+        let openSpots = 0;
+        for (let i = 0; i < 9; i++) {
+            if (Gameboard.gameBoard[i] === "")
+            openSpots.push[i];
+        }
+        if (openSpots.length === 0) {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -100,6 +104,19 @@ const Game = (() => {
            return winner;
         }
     }
+
+    const gameOverLogic = function() {
+        if (checkTie() = true) {
+           Display.updateWinnerDiv("tie");
+        } else {
+            if (winningPlayer() === "X") {
+                Display.updateWinnerDiv(player1);
+            } else if (winningPlayer() === "O") {
+                Display.updateWinnerDiv(player2);
+            }
+        }
+        
+    }
     
     let turn = 1;
     const whosTurn = () => {
@@ -113,11 +130,21 @@ const Game = (() => {
                 Gameboard.updateBoard(e.target.getAttribute("data-value"), activePlayer.symbol)
                 console.log(player1.symbol);
                 Gameboard.boardRender();
-                turn++;
+                console.log(checkForWinner());
+                if (!checkForWinner()) {
+                    turn++;
+                } else {
+                    gameOverLogic();
+                }
             }
         } else if (activePlayer === player2) {
-            bestMove();
-            turn++;
+                Ai.bestMove();
+                console.log(checkForWinner());
+                if (!checkForWinner()) {
+                    turn++;
+                } else {
+                    gameOverLogic();
+                }
         }
     }
     
@@ -131,14 +158,6 @@ const Game = (() => {
         Gameboard.boardTiles.forEach((tile) => {
             tile.addEventListener('click', moves);
         })
-    }
-
-    const updateWinner = () => {
-        if (winningPlayer() === "X") {
-            winner = player1;
-        } else if (winningPlayer() === "O") {
-            winner = player2;
-        }
     }
 
     const resetGame = () => {
@@ -155,80 +174,8 @@ const Game = (() => {
     }
 
     addEvents();
-    let playableCells = [];
-    function emptyCells() {
-        for (let i = 0; i < Gameboard.gameBoard.length; i++) {
-            if (Gameboard.gameBoard[i] === "") {
-                playableCells.push(i);
-            }
-        }
-        return playableCells;
-    }
-    function bestMove() {
-        let bestScore = -Infinity;
-        let move;
-        for (let i = 0; i < 9; i++) {
-            if (Gameboard.gameBoard[i] === "") {
-                Gameboard.gameBoard[i] = player2.symbol;
-                let score = minimax(Gameboard.gameBoard, 0, false);
-                Gameboard.gameBoard[i] = "";
-                console.log(score);
-                if (score > bestScore) {
-                    bestScore = score;
-                    console.log(i);
-                    move = i
-                }
-            }
-        }
-        Gameboard.updateBoard(move, player2.symbol);
-        Gameboard.boardRender();
-        return move;
-    }
 
-    const scores = {
-        X: -1,
-        O: 1,
-        tie: 0
-    }
-
-    function minimax(board, depth, isMaximizing) {
-        let result = winningPlayer();
-        if (result !== null) {
-            let score = scores[result];
-            return score
-        }        
-        
-        if (isMaximizing) {
-            let bestScore = -Infinity;
-            for (let i = 0; i < 9; i++) {
-                if (board[i] === "") {
-                    Gameboard.gameBoard[i] =  player2.symbol;
-                    let score = minimax(Gameboard.gameBoard, depth + 1, false);
-                    Gameboard.gameBoard[i] = "";
-                    if (score > bestScore) {
-                        bestScore = score;
-                    }
-                }
-            }
-            return bestScore;
-        } else {
-            let bestScore = Infinity;
-            for (let i = 0; i < 9; i++) {
-                if (board[i] === "") {
-                    Gameboard.gameBoard[i] = player1.symbol;
-                    let score = minimax(Gameboard.gameBoard, depth + 1, true);
-                    Gameboard.gameBoard[i] = "";
-                    if (score < bestScore) {
-                        bestScore = score;
-                    }
-                }
-            }
-            return bestScore;
-        }
-    }
-    console.log(minimax(Gameboard.gameBoard, 0, false));
-
-    return {removeEvents, winningPlayer, updateWinner, resetGame, minimax}
+    return {removeEvents, winningPlayer, resetGame, player1, player2}
 })();
 
 const Display = (() => {
@@ -241,7 +188,12 @@ const Display = (() => {
 
     // Updating DOM Elements
     const updateWinnerDiv = (player) => {
-        winnerResultDiv.innerText = player.name
+        winnerResultDiv.innerText = player.name;
+
+        if (player === "tie") {
+            winnerResultDiv.innerText = "Tie!";
+        }
+
         if (player === "reset") {
             winnerResultDiv.innerText = "";
         }
@@ -251,106 +203,70 @@ const Display = (() => {
 })();
 
 
-
-
-
-const bestMove = () => {
-    let bestScore = -Infinity;
-    let move;
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++ ) {
-            if (!gameBoard.boardArray[i][j]) {
-                gameBoard.boardArray[i][j] = player2.getTeam();
-                let score = minimax(gameBoard.boardArray, 0, false);
-                gameBoard.boardArray[i][j] = ''
+const Ai = (() => {
+    function bestMove() {
+        let bestScore = -Infinity;
+        let move;
+        for (let i = 0; i < 9; i++) {
+            if (Gameboard.gameBoard[i] === "") {
+                Gameboard.gameBoard[i] = Game.player2.symbol;
+                let score = minimax(Gameboard.gameBoard, 0, false);
+                Gameboard.gameBoard[i] = "";
                 if (score > bestScore) {
                     bestScore = score;
-                    move = {i , j};
+                    move = i
                 }
             }
         }
+        Gameboard.updateBoard(move, Game.player2.symbol);
+        Gameboard.boardRender();
+        return move;
     }
-    gameBoard.boardArray[move.i][move.j] = player2.getTeam();
-    gameBoard.clearBoard();
-    gameBoard.displayBoard();
-    /* if (currentPlayer == player1) {
-        currentPlayer = player2;
-    } else {
-        currentPlayer = player1;
-    } */
-    turnCount += 1;
-    if (checkForWin()[0] != null) {
-        gameOver = true;
-        const result = document.querySelector("#result");
-        if (checkForWin()[0] != 'tie'){
-            result.textContent = checkForWin()[0] + " WINS!!";
-            
-            body.classList.add("animate");
-            drawLine(checkForWin()[1]);
-            touch.currentTime = 1.3;
-            touch.play();
-        } else {
-            result.textContent = "Cat's game. Try again."
-            cat.currentTime = 0;
-            cat.play();
-        }
-       
+
+    const scores = {
+        X: -1,
+        O: 1,
+        tie: 0
+    }
+
+    function minimax(board, depth, isMaximizing) {
+        let result = Game.winningPlayer();
+        if (result !== null) {
+            let score = scores[result];
+            return score
+        }        
         
-        
-    }
-    if (!gameOver){
-    takeTurn();
-    }
-    
-}
-
-const scores = {
-    X: -1,
-    O: 1,
-    tie: 0
-};
-
-const minimax = (board, depth, isMaximizing) => {
-    let result = checkForWin()[0];
-    if (result !== null) {
-        let score = scores[result];
-        return score
-    }
-
-    if (isMaximizing) {
-        let bestScore = -Infinity;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++ ) {
-                if (!gameBoard.boardArray[i][j]) {
-                    gameBoard.boardArray[i][j] = player2.getTeam();
-                    let score = minimax(board, depth + 1, false);
-                    gameBoard.boardArray[i][j] = '';
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === "") {
+                    Gameboard.gameBoard[i] =  Game.player2.symbol;
+                    let score = minimax(Gameboard.gameBoard, depth + 1, false);
+                    Gameboard.gameBoard[i] = "";
                     if (score > bestScore) {
                         bestScore = score;
                     }
                 }
             }
-        }
-        return bestScore;
-    } else {
-        let bestScore = Infinity;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++ ) {
-                if (!gameBoard.boardArray[i][j]) {
-                    /* if (currentPlayer == player1) {
-                        currentPlayer = player2;
-                    } else {
-                        currentPlayer = player1;
-                    } */
-                    gameBoard.boardArray[i][j] = player1.getTeam();
-                    let score = minimax(board, depth + 1, true);
-                    gameBoard.boardArray[i][j] = '';
-                    if ( score < bestScore) {
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === "") {
+                    Gameboard.gameBoard[i] = Game.player1.symbol;
+                    let score = minimax(Gameboard.gameBoard, depth + 1, true);
+                    Gameboard.gameBoard[i] = "";
+                    if (score < bestScore) {
                         bestScore = score;
                     }
                 }
             }
+            return bestScore;
         }
-        return bestScore;
     }
-}
+
+    return {bestMove}
+})();
+
+
+// TODO: Need to fix the announcement of the winner in the Display module (currently not showing the announcement if a tie has happened, only if one of the player or the computer wins)
