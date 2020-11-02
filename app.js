@@ -54,11 +54,6 @@ const Game = (() => {
         let winner = null;
         let winLocation = _checkForWinner();
         let winMarker = Gameboard.gameBoard[winLocation[0]];
-        if (winMarker === "X") {
-            winner = "X";
-        } else if (winMarker === "O") {
-            winner = "O"
-        }
         let openSpots = 0;
         for (let i = 0; i < Gameboard.gameBoard.length; i++) {
             if (Gameboard.gameBoard[i] === "") {
@@ -68,9 +63,15 @@ const Game = (() => {
         if (winner === null && openSpots === 0) {
             winner = "tie";
             return winner;
-        } else {
-           return winner;
         }
+
+        if (winMarker === "X") {
+            winner = "X";
+        } else if (winMarker === "O") {
+            winner = "O"
+        }
+
+        return winner;
     }
 
     let gameOver = false;
