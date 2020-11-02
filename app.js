@@ -95,11 +95,10 @@ const Game = (() => {
                 Gameboard.boardRender();
                 console.log(checkForWinner());
                 turn++;
-            }
-        } else if (activePlayer === player2) {
-                Ai.bestMove();
+                setTimeout(Ai.bestMove, 1500);
                 console.log(checkForWinner());
                 turn++;
+            }
         }
     }
     
@@ -223,6 +222,7 @@ const Ai = (() => {
 })();
 
 
+// TODO: Need to refactor the way the game moves, right now the player has to click for the ai to play, need to fix that
 // TODO: Need to refactor the code block that determines who the win is assigned to
 // TODO: Need to fix the announcement of the winner in the Display module (currently not showing the announcement if a tie has happened, only if one of the player or the computer wins)
 // TODO: Need to clean up the private/public functions and what is returned and naming scheme of functions
