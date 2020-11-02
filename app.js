@@ -78,6 +78,8 @@ const Game = (() => {
             Display.updateWinnerDiv(player1);
         } else if (winningPlayer() === "O") {
             Display.updateWinnerDiv(player2);
+        } else if (winningPlayer() === "tie") {
+            Display.updateWinnerDiv("tie");
         }
     }
     
@@ -87,18 +89,11 @@ const Game = (() => {
     }
 
     const moves = (e) => {
-        let activePlayer = whosTurn();
-        if (activePlayer === player1) {
-            if (e.target.innerText === "") {
-                Gameboard.updateBoard(e.target.getAttribute("data-value"), activePlayer.symbol)
-                console.log(player1.symbol);
-                Gameboard.boardRender();
-                console.log(checkForWinner());
-                turn++;
-                setTimeout(Ai.bestMove, 1500);
-                console.log(checkForWinner());
-                turn++;
-            }
+        if (e.target.innerText === "") {
+            Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
+            Gameboard.boardRender();
+            gameOverLogic();
+            setTimeout(Ai.bestMove, 1500);
         }
     }
     
@@ -128,7 +123,7 @@ const Game = (() => {
 
     addEvents();
 
-    return {removeEvents, winningPlayer, resetGame, player1, player2}
+    return {removeEvents, winningPlayer, resetGame, player1, player2, gameOverLogic}
 })();
 
 const Display = (() => {
@@ -173,6 +168,7 @@ const Ai = (() => {
         }
         Gameboard.updateBoard(move, Game.player2.symbol);
         Gameboard.boardRender();
+        Game.gameOverLogic();
         return move;
     }
 
@@ -221,8 +217,5 @@ const Ai = (() => {
     return {bestMove}
 })();
 
-
-// TODO: Need to refactor the way the game moves, right now the player has to click for the ai to play, need to fix that
-// TODO: Need to refactor the code block that determines who the win is assigned to
-// TODO: Need to fix the announcement of the winner in the Display module (currently not showing the announcement if a tie has happened, only if one of the player or the computer wins)
+// TODO: Need to make it so that plays can't be made after the game is already won
 // TODO: Need to clean up the private/public functions and what is returned and naming scheme of functions
