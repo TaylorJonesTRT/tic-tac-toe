@@ -95,7 +95,7 @@ const Game = (() => {
                 Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
                 Gameboard.boardRender();
                 gameOverLogic();
-                setTimeout(Ai.bestMove, 1500);
+                setTimeout(Ai.bestMove, 50);
             }
         }
     }
