@@ -73,13 +73,19 @@ const Game = (() => {
         }
     }
 
+    let gameOver = false;
     const gameOverLogic = function() {
         if (winningPlayer() === "X") {
             Display.updateWinnerDiv(player1);
+            gameOver = true;
         } else if (winningPlayer() === "O") {
             Display.updateWinnerDiv(player2);
+            gameOver = true;
         } else if (winningPlayer() === "tie") {
             Display.updateWinnerDiv("tie");
+            gameOver = true;
+        } else {
+            gameOver = false;
         }
     }
     
@@ -89,11 +95,13 @@ const Game = (() => {
     }
 
     const moves = (e) => {
-        if (e.target.innerText === "") {
-            Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
-            Gameboard.boardRender();
-            gameOverLogic();
-            setTimeout(Ai.bestMove, 1500);
+        if (gameOver === false) {
+            if (e.target.innerText === "") {
+                Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
+                Gameboard.boardRender();
+                gameOverLogic();
+                setTimeout(Ai.bestMove, 1500);
+            }
         }
     }
     
@@ -217,5 +225,4 @@ const Ai = (() => {
     return {bestMove}
 })();
 
-// TODO: Need to make it so that plays can't be made after the game is already won
 // TODO: Need to clean up the private/public functions and what is returned and naming scheme of functions
