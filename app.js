@@ -28,7 +28,7 @@ const Game = (() => {
     const player1 = Player("Player", "X");
     const player2 = Player("Computer", "O");
 
-    const checkForWinner = () => {
+    const _checkForWinner = () => {
         if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
             return [0,1,2];
         } else if (Gameboard.gameBoard[3] === Gameboard.gameBoard[4] && Gameboard.gameBoard[3] === Gameboard.gameBoard[5] && Gameboard.gameBoard[3] !== ""){
@@ -52,7 +52,7 @@ const Game = (() => {
 
     const winningPlayer = function() {
         let winner = null;
-        let winLocation = checkForWinner();
+        let winLocation = _checkForWinner();
         let winMarker = Gameboard.gameBoard[winLocation[0]];
         if (winMarker === "X") {
             winner = "X";
@@ -88,13 +88,8 @@ const Game = (() => {
             gameOver = false;
         }
     }
-    
-    let turn = 1;
-    const whosTurn = () => {
-        return (turn % 2 === 0) ? player2 : player1;
-    }
 
-    const moves = (e) => {
+    const _moves = (e) => {
         if (gameOver === false) {
             if (e.target.innerText === "") {
                 Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
@@ -106,32 +101,29 @@ const Game = (() => {
     }
     
 
-    const removeEvents = () => {
+    const _removeEvents = () => {
         Gameboard.boardTiles.forEach((tile) => {
-            tile.removeEventListener('click', moves);
+            tile.removeEventListener('click', _moves);
         });
     }
     function addEvents() {
         Gameboard.boardTiles.forEach((tile) => {
-            tile.addEventListener('click', moves);
+            tile.addEventListener('click', _moves);
         })
     }
 
     const resetGame = () => {
-        removeEvents();
+        _removeEvents();
         for (let y = 0; y <= 8; y++) {
-            Gameboard.gameBoard[y] = "";
+            Gameboard.updateBoard(y, "");
         }
-        winner = "";
         Gameboard.boardRender();
         addEvents();
-        Display.updateWinnerDiv("reset");
-        turn = 1;
     }
 
     addEvents();
 
-    return {removeEvents, winningPlayer, resetGame, player1, player2, gameOverLogic}
+    return {winningPlayer, resetGame, player1, player2, gameOverLogic}
 })();
 
 const Display = (() => {
@@ -166,7 +158,7 @@ const Ai = (() => {
         for (let i = 0; i < 9; i++) {
             if (Gameboard.gameBoard[i] === "") {
                 Gameboard.gameBoard[i] = Game.player2.symbol;
-                let score = minimax(Gameboard.gameBoard, 0, false);
+                let score = _minimax(Gameboard.gameBoard, 0, false);
                 Gameboard.gameBoard[i] = "";
                 if (score > bestScore) {
                     bestScore = score;
@@ -186,7 +178,7 @@ const Ai = (() => {
         tie: 0
     }
 
-    function minimax(board, depth, isMaximizing) {
+    function _minimax(board, depth, isMaximizing) {
         let result = Game.winningPlayer();
         if (result !== null) {
             let score = scores[result];
@@ -198,7 +190,7 @@ const Ai = (() => {
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
                     Gameboard.gameBoard[i] =  Game.player2.symbol;
-                    let score = minimax(Gameboard.gameBoard, depth + 1, false);
+                    let score = _minimax(Gameboard.gameBoard, depth + 1, false);
                     Gameboard.gameBoard[i] = "";
                     if (score > bestScore) {
                         bestScore = score;
@@ -211,7 +203,7 @@ const Ai = (() => {
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
                     Gameboard.gameBoard[i] = Game.player1.symbol;
-                    let score = minimax(Gameboard.gameBoard, depth + 1, true);
+                    let score = _minimax(Gameboard.gameBoard, depth + 1, true);
                     Gameboard.gameBoard[i] = "";
                     if (score < bestScore) {
                         bestScore = score;
@@ -224,5 +216,3 @@ const Ai = (() => {
 
     return {bestMove}
 })();
-
-// TODO: Need to clean up the private/public functions and what is returned and naming scheme of functions
