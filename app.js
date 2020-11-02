@@ -60,15 +60,15 @@ const Game = (() => {
                 openSpots++;
             }
         }
-        if (winner === null && openSpots === 0) {
-            winner = "tie";
-            return winner;
-        }
 
         if (winMarker === "X") {
             winner = "X";
         } else if (winMarker === "O") {
             winner = "O"
+        } else if (winner === null && openSpots === 0) {
+            winner = "tie";
+        } else {
+            winner = null;
         }
 
         return winner;
@@ -120,6 +120,7 @@ const Game = (() => {
         }
         Gameboard.boardRender();
         addEvents();
+        gameOver = false;
     }
 
     addEvents();
@@ -217,3 +218,6 @@ const Ai = (() => {
 
     return {bestMove}
 })();
+
+
+// TODO: Bug fix - Game.winningPlayer is still not sending the correct param to Display.updateWinnerDiv
