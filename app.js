@@ -70,7 +70,6 @@ const Game = (() => {
         } else {
             winner = null;
         }
-
         return winner;
     }
 
@@ -97,6 +96,7 @@ const Game = (() => {
                 Gameboard.boardRender();
                 gameOverLogic();
                 setTimeout(Ai.bestMove, 50);
+                gameOverLogic();
             }
         }
     }
