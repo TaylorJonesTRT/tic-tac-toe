@@ -162,7 +162,7 @@ const Ai = (() => {
 
     const scores = {
         X: -100,
-        O: 200,
+        O: 100,
         tie: 0
     }
 
