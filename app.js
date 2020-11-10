@@ -132,6 +132,7 @@ const Display = (() => {
 
     // Updating DOM Elements
     const updateWinnerDiv = (player) => {
+<<<<<<< HEAD
        if (player === "X") {
            winnerResultDiv.innerText = "Player";
        } else if (player === "O") {
@@ -139,6 +140,9 @@ const Display = (() => {
        } else if (player === "Tie") {
            winnerResultDiv.innerText = "Tie";
        }
+=======
+       winnerResultDiv.textContent = player;
+>>>>>>> 73c918142cd1c9771637ec8aec344598320b584d
     }
 
     return {updateWinnerDiv}
