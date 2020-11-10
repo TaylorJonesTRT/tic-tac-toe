@@ -28,8 +28,16 @@ const Game = (() => {
     const player1 = Player("Player", "X");
     const player2 = Player("Computer", "O");
 
-    const _checkForWinner = () => {
-        if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
+    function _checkForWinner() {
+        let openSpots = 0;
+        for (let i = 0; i < Gameboard.gameBoard.length; i++) {
+            if (Gameboard.gameBoard[i] === "") {
+                openSpots++;
+            }
+        }
+        if (openSpots === 0) {
+            return "tie";
+        } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
             return [0,1,2];
         } else if (Gameboard.gameBoard[3] === Gameboard.gameBoard[4] && Gameboard.gameBoard[3] === Gameboard.gameBoard[5] && Gameboard.gameBoard[3] !== ""){
             return [3, 4, 5];
@@ -50,53 +58,38 @@ const Game = (() => {
         }        
     }
 
-    const winningPlayer = function() {
+    const winningPlayer = () => {
         let winner = null;
         let winLocation = _checkForWinner();
         let winMarker = Gameboard.gameBoard[winLocation[0]];
-        let openSpots = 0;
-        for (let i = 0; i < Gameboard.gameBoard.length; i++) {
-            if (Gameboard.gameBoard[i] === "") {
-                openSpots++;
-            }
-        }
-
-        if (winMarker === "X") {
-            winner = "X";
-        } else if (winMarker === "O") {
-            winner = "O"
-        } else if (winner === null && openSpots === 0) {
-            winner = "tie";
+        
+        if (winLocation === "tie") {
+            winner = "Tie";
         } else {
-            winner = null;
+            if (winMarker === "X") {
+                winner = "X";
+            } else if (winMarker === "O") {
+                winner = "O"
+            }
         }
         return winner;
     }
 
     let gameOver = false;
-    const gameOverLogic = function() {
-        if (winningPlayer() === "X") {
-            Display.updateWinnerDiv(player1);
-            gameOver = true;
-        } else if (winningPlayer() === "O") {
-            Display.updateWinnerDiv(player2);
-            gameOver = true;
-        } else if (winningPlayer() === "tie") {
-            Display.updateWinnerDiv("tie");
-            gameOver = true;
-        } else {
+    function gameOverLogic() {
+        if (_checkForWinner === false) {
             gameOver = false;
+        } else {
+            Display.updateWinnerDiv(winningPlayer());
         }
     }
 
     const _moves = (e) => {
         if (gameOver === false) {
             if (e.target.innerText === "") {
-                Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol)
+                Gameboard.updateBoard(e.target.getAttribute("data-value"), player1.symbol);
                 Gameboard.boardRender();
-                gameOverLogic();
                 setTimeout(Ai.bestMove, 50);
-                gameOverLogic();
             }
         }
     }
@@ -115,17 +108,18 @@ const Game = (() => {
 
     const resetGame = () => {
         _removeEvents();
-        for (let y = 0; y <= 8; y++) {
+        for (let y = 0; y <= 9; y++) {
             Gameboard.updateBoard(y, "");
         }
         Gameboard.boardRender();
         addEvents();
         gameOver = false;
+        Display.updateWinnerDiv("reset");
     }
 
     addEvents();
 
-    return {winningPlayer, resetGame, player1, player2, gameOverLogic}
+    return {winningPlayer, resetGame, player1, player2, gameOverLogic, _checkForWinner}
 })();
 
 const Display = (() => {
@@ -138,15 +132,13 @@ const Display = (() => {
 
     // Updating DOM Elements
     const updateWinnerDiv = (player) => {
-        winnerResultDiv.innerText = player.name;
-
-        if (player === "tie") {
-            winnerResultDiv.innerText = "Tie!";
-        }
-
-        if (player === "reset") {
-            winnerResultDiv.innerText = "";
-        }
+       if (player === "X") {
+           winnerResultDiv.innerText = "Player";
+       } else if (player === "O") {
+           winnerResultDiv.innerText = "Computer";
+       } else if (player === "Tie") {
+           winnerResultDiv.innerText = "Tie";
+       }
     }
 
     return {updateWinnerDiv}
@@ -175,8 +167,8 @@ const Ai = (() => {
     }
 
     const scores = {
-        X: -1,
-        O: 1,
+        X: -100,
+        O: 200,
         tie: 0
     }
 
@@ -221,3 +213,4 @@ const Ai = (() => {
 
 
 // TODO: Bug fix - Game.winningPlayer is still not sending the correct param to Display.updateWinnerDiv
+// TODO: Maybe rewrite everything that isn't the AI
