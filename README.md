@@ -6,7 +6,7 @@ I created this game of Tic-Tac-Toe as solution to a solo project from [The Odin 
 
 ## Demo
 
-![Demo][https://github.com/TaylorJonesTRT/tic-tac-toe/blob/master/gh/demo.gif "Demo"]
+![Demo](https://github.com/TaylorJonesTRT/tic-tac-toe/blob/master/gh/demo.gif)
 
 ## How to Play
 
