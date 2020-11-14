@@ -37,17 +37,17 @@ const Game = (() => {
         }
         if (openSpots === 0) {
             return "tie";
-        } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== "") {
+        } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[1] && Gameboard.gameBoard[0] === Gameboard.gameBoard[2] && Gameboard.gameBoard[0] !== ""){
             return [0,1,2];
         } else if (Gameboard.gameBoard[3] === Gameboard.gameBoard[4] && Gameboard.gameBoard[3] === Gameboard.gameBoard[5] && Gameboard.gameBoard[3] !== ""){
             return [3, 4, 5];
-        } else if (Gameboard.gameBoard[6] === Gameboard.gameBoard[7] && Gameboard.gameBoard[6] === Gameboard.gameBoard[8] && Gameboard.gameBoard[6] !== "") {
+        } else if (Gameboard.gameBoard[6] === Gameboard.gameBoard[7] && Gameboard.gameBoard[6] === Gameboard.gameBoard[8] && Gameboard.gameBoard[6] !== ""){
             return [6, 7, 8];
         } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[4] && Gameboard.gameBoard[0] === Gameboard.gameBoard[8] && Gameboard.gameBoard[0] !== ""){
             return [0, 4, 8];
         } else if (Gameboard.gameBoard[2] === Gameboard.gameBoard[4] && Gameboard.gameBoard[2] === Gameboard.gameBoard[6] && Gameboard.gameBoard[2] !== ""){
             return [2, 4, 6];
-        } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[3] && Gameboard.gameBoard[0] === Gameboard.gameBoard[6] && Gameboard.gameBoard[0] !== "") {
+        } else if (Gameboard.gameBoard[0] === Gameboard.gameBoard[3] && Gameboard.gameBoard[0] === Gameboard.gameBoard[6] && Gameboard.gameBoard[0] !== ""){
             return [0, 3, 6];
         } else if (Gameboard.gameBoard[1] === Gameboard.gameBoard[4] && Gameboard.gameBoard[1] === Gameboard.gameBoard[7] && Gameboard.gameBoard[1] !== "") {
             return [1, 4, 7];
@@ -114,12 +114,12 @@ const Game = (() => {
         Gameboard.boardRender();
         addEvents();
         gameOver = false;
-        Display.updateWinnerDiv("reset");
+        Display.updateWinnerDiv("Reset");
     }
 
     addEvents();
 
-    return {winningPlayer, resetGame, player1, player2, gameOverLogic, _checkForWinner}
+    return {winningPlayer, resetGame, player1, player2, gameOverLogic}
 })();
 
 const Display = (() => {
@@ -132,8 +132,12 @@ const Display = (() => {
 
     // Updating DOM Elements
     const updateWinnerDiv = (player) => {
-       if (player === "X") {
-           winnerResultDiv.innerText = "Player";d
+        console.log(player);
+
+       if (player === "Reset") {
+           winnerResultDiv.innerText = "";
+       } else if (player === "X") {
+           winnerResultDiv.innerText = "Player";
        } else if (player === "O") {
            winnerResultDiv.innerText = "Computer";
        } else if (player === "Tie") {
@@ -212,5 +216,5 @@ const Ai = (() => {
 })();
 
 
-// TODO: Bug fix - Game.winningPlayer is still not sending the correct param to Display.updateWinnerDiv
-// TODO: Maybe rewrite everything that isn't the AI
+// TODO: Move "boardRender" from Gameboard to the "Display" module
+// TODO? Maybe rewrite the check for winner function to be smaller and not as long
